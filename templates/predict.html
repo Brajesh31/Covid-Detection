@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Image Classifier</title>
+
+	<style>
+		.container::before {
+			content: "";
+			background-image: url('/static/images/bg.jfif');
+			background-repeat: no-repeat;
+			background-size: 100% 100%;
+			opacity: 0.8;
+			background-size: cover;
+			background-attachment: fixed;
+			height: 100vh;
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			right: 0px;
+			bottom: 0px;
+			z-index: -1;
+		}
+
+		body {
+			margin: 0;
+			padding: 0;
+		}
+
+		.container {
+			width: 60%;
+			margin: 0 auto;
+		}
+
+		h1 {
+			margin-bottom: 25px;
+			text-align: center;
+		}
+
+		.upload-btn,
+		.predict-btn {
+			opacity: 0;
+			width: 0.1px;
+			height: 0.1px;
+			position: absolute;
+		}
+
+		.main-box {
+			height: 100%;
+			width: 100%;
+			margin: 0 auto;
+		}
+
+		.main-box label {
+			display: block;
+			position: relative;
+			width: 200px;
+			margin: 0 auto;
+			height: 50px;
+			border-radius: 25px;
+			background: linear-gradient(40deg, #ff6ec4, #7873f5);
+			box-shadow: 0 4px 7px rgba(0, 0, 0, 0.4);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: #fff;
+			font-weight: bold;
+			cursor: pointer;
+			transition: transform .2s ease-out;
+			text-align: center;
+			font-size: 16px;
+		}
+
+		.main-box #pred {
+			clear: right;
+			position: relative;
+			top: -50px;
+		}
+
+		.sub-box {
+			width: 100%;
+		}
+
+		.display-img-box {
+			height: 300px;
+			width: 40%;
+			margin: 0px auto;
+			margin-top: 20px;
+		}
+
+		.display-img-box img {
+			height: 100%;
+			width: 100%;
+		}
+
+		.display-result-box {
+			position: relative;
+			top: -190px;
+			float: right;
+			margin-right: 30px;
+			width: 20%;
+			font-size: 22px;
+			font-weight: bold;
+			padding: 20px 10px;
+			color: #000;
+			text-align: center;
+		}
+
+		input:hover+label,
+		input:focus+label {
+			transform: scale(1.02);
+		}
+
+		input:focus+label {
+			outline: 1px solid #000;
+			outline: -webkit-focus-ring-color auto 2px;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<h1>X-ray Image Classifier</h1>
+		<form method="post" action="/predict" enctype="multipart/form-data">
+			<div class="main-box">
+				<input class="upload-btn" type="file" name="file" id="file" autocomplete="off" required>
+				<label id="upload" for="file" onclick="upload_fun()">Select file</label>
+
+				<div class="sub-box">
+					<div class="display-img-box">
+						<img id="x-ray" src="{{ url_for('static', filename=files) }}" alt="x-ray">
+					</div>
+					<div class="display-result-box">
+						{% with messages = get_flashed_messages() %}
+						{% if messages %}
+						{{ messages[0] }}
+						{% endif %}
+						{% endwith %}
+					</div>
+				</div>
+
+				<input class="predict-btn" type="submit" id="file2">
+				<label id="pred" for="file2">Predict</label>
+			</div>
+
+		</form>
+	</div>
+
+	<script type="text/javascript">
+
+		const pred = document.getElementById('pred');
+		const res_box = document.getElementsByClassName('display-result-box')[0];
+		const image_box = document.getElementsByClassName('display-img-box')[0];
+		const image = document.getElementById('x-ray');
+
+		function upload_fun() {
+			pred.style.visibility = 'hidden';
+			image_box.style.visibility = 'hidden';
+			res_box.style.visibility = 'hidden';
+			helper();
+		}
+
+		function helper() {
+			const file = document.querySelector('#file');
+			file.addEventListener('change', (e) => {
+				readURL(e.target)
+				pred.style.visibility = 'visible';
+				image_box.style.visibility = 'visible';
+			});
+		}
+
+		function readURL(input) {
+			if (input.files && input.files[0]) {
+				var reader = new FileReader();
+				reader.onload = function (e) {
+					image.src = e.target.result;
+				}
+				reader.readAsDataURL(input.files[0]);
+			}
+		}
+	</script>
+</body>
+
+</html>
